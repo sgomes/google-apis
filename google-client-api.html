@@ -35,22 +35,23 @@ Element for loading a specific Google API with the Javascript client library.
 
 ##### Example
 
-    <google-client-api-loader id="shortener" name="urlshortener" version="v1">
-    </google-client-api-loader>
+    <google-api-loader id="shortener" name="urlshortener" version="v1">
+    </google-api-loader>
 
     <script>
       var shortener = document.getElementById('shortener');
-      shortener.addEventListener('google-client-api-load', function(event) {
+      shortener.addEventListener('google-api-load', function(event) {
         var request = shortener.api.url.get({'shortUrl': 'http://goo.gl/fbsS'});
         request.execute(function(resp) { console.log(resp); });
       });
     </script>
 
-@element google-client-api-loader
+@element google-api-loader
 @status alpha
-@url http://polymerlabs.github.io/google-apis
+@extends google-client-api
+@homepage http://polymerlabs.github.io/google-apis
 -->
-<polymer-element name="google-client-api-loader"
+<polymer-element name="google-api-loader"
                  attributes="name version"
                  extends="google-client-api"
                  on-api-load="{{doneLoadingClient}}">
@@ -63,23 +64,27 @@ Element for loading a specific Google API with the Javascript client library.
 
     // Loaders and loading statuses for all APIs, indexed by API name.
     // This helps prevent multiple loading requests being fired at the same time
-    // by multiple google-client-api-loader elements.
+    // by multiple google-api-loader elements.
     var statuses_ = {};
     var loaders_ = {};
 
-    Polymer('google-client-api-loader', {
+    Polymer('google-api-loader', {
       /**
        * Fired when the requested API is loaded.
-       * @event google-client-api-load
+       * @event google-api-load
        */
 
       /**
        * Fired if an error occurs while loading the requested API.
-       * @event google-client-api-load-error
+       * @event google-api-load-error
        */
 
       /**
        * Name of the API to load, e.g. 'urlshortener'.
+       *
+       * You can find the full list of APIs on the
+       * <a href="https://developers.google.com/apis-explorer"> Google APIs
+       * Explorer</a>.
        * @attribute name
        * @type string
        * @required
@@ -98,8 +103,8 @@ Element for loading a specific Google API with the Javascript client library.
       // core-shared-lib.
       waiting: false,
 
-      successEventName: 'google-client-api-load',
-      errorEventName: 'google-client-api-load-error',
+      successEventName: 'google-api-load',
+      errorEventName: 'google-api-load-error',
 
       /**
        * Returns the loaded API.
@@ -167,7 +172,7 @@ Element for loading a specific Google API with the Javascript client library.
           // Is this API already loaded?
           if (statuses_[this.name] == 'loaded') {
             this.fireSuccess();
-          // Is a different google-client-api-loader already loading this API?
+          // Is a different google-api-loader already loading this API?
           } else if (statuses_[this.name] == 'loading') {
             this.waiting = true;
             loaders_[this.name].addEventListener(this.successEventName,
